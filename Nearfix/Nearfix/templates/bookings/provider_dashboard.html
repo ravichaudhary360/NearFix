@@ -1,0 +1,324 @@
+{% extends 'base.html' %}
+{% block title %}Provider Dashboard — NearFix{% endblock %}
+
+{% block extra_css %}
+<style>
+.nf-navbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 2.5rem; background: #13161e;
+    border-bottom: 0.5px solid #2a3040;
+    position: sticky; top: 0; z-index: 100;
+}
+.nf-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.nf-logo-icon { width: 36px; height: 36px; background: #1D9E75; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+.nf-logo-icon svg { width: 18px; height: 18px; }
+.nf-logo-text { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px; letter-spacing: -0.5px; color: #fff; }
+.nf-logo-text span { color: #1D9E75; }
+.nf-nav-right { display: flex; align-items: center; gap: 1rem; }
+.nf-user-badge { display: flex; align-items: center; gap: 8px; background: #1a1e28; border: 0.5px solid #2a3040; border-radius: 20px; padding: 6px 14px; font-size: 13px; color: #e8e6e0; }
+.nf-user-avatar { width: 26px; height: 26px; background: #1D9E75; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; }
+.nf-btn-sm { font-size: 12px; color: #5a6a80; text-decoration: none; padding: 6px 12px; border-radius: 8px; border: 0.5px solid #2a3040; transition: all 0.2s; }
+.nf-btn-sm:hover { color: #e8e6e0; border-color: #4a5a70; }
+
+/* DASHBOARD */
+.nf-dash-wrap { max-width: 1100px; margin: 0 auto; padding: 2.5rem; }
+
+.nf-dash-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;
+}
+.nf-dash-title { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; color: #fff; }
+.nf-dash-title span { color: #1D9E75; }
+
+.nf-avail-toggle {
+    display: flex; align-items: center; gap: 10px;
+    background: #13161e; border: 0.5px solid #2a3040;
+    border-radius: 10px; padding: 10px 16px;
+}
+.nf-avail-label { font-size: 13px; color: #8a9ab5; }
+.nf-toggle {
+    width: 42px; height: 24px; background: #2a3040;
+    border-radius: 12px; position: relative; cursor: pointer;
+    border: none; transition: background 0.2s;
+}
+.nf-toggle.on { background: #1D9E75; }
+.nf-toggle::after {
+    content: ''; position: absolute;
+    width: 18px; height: 18px; background: #fff;
+    border-radius: 50%; top: 3px; left: 3px; transition: left 0.2s;
+}
+.nf-toggle.on::after { left: 21px; }
+
+/* STATS ROW */
+.nf-stats-row {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 14px; margin-bottom: 2.5rem;
+}
+.nf-stat-card {
+    background: #13161e; border: 0.5px solid #2a3040;
+    border-radius: 12px; padding: 1.2rem 1.4rem;
+}
+.nf-stat-card-num { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+.nf-stat-card-label { font-size: 12px; color: #5a6a80; text-transform: uppercase; letter-spacing: 0.4px; }
+.nf-stat-card.green .nf-stat-card-num { color: #1D9E75; }
+.nf-stat-card.yellow .nf-stat-card-num { color: #f5c842; }
+.nf-stat-card.blue .nf-stat-card-num { color: #5b9bd5; }
+
+/* SECTIONS */
+.nf-section { margin-bottom: 2.5rem; }
+.nf-section-head {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 1rem;
+}
+.nf-section-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; color: #fff; }
+.nf-count-badge {
+    background: rgba(29,158,117,0.1); border: 0.5px solid rgba(29,158,117,0.3);
+    border-radius: 20px; padding: 2px 10px;
+    font-size: 12px; color: #1D9E75; font-weight: 600;
+}
+.nf-count-badge.yellow { background: rgba(245,200,66,0.1); border-color: rgba(245,200,66,0.3); color: #f5c842; }
+
+/* BOOKING CARDS */
+.nf-booking-card {
+    background: #13161e; border: 0.5px solid #2a3040;
+    border-radius: 12px; padding: 1.2rem 1.4rem;
+    margin-bottom: 10px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 1rem;
+}
+.nf-booking-info { flex: 1; }
+.nf-booking-customer { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+.nf-booking-meta { font-size: 12px; color: #5a6a80; line-height: 1.6; }
+.nf-booking-meta span { color: #8a9ab5; }
+
+.nf-status-badge {
+    display: inline-block; padding: 4px 12px;
+    border-radius: 20px; font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.4px;
+}
+.status-pending  { background: rgba(245,200,66,0.1);  border: 0.5px solid rgba(245,200,66,0.3);  color: #f5c842; }
+.status-accepted { background: rgba(29,158,117,0.1);  border: 0.5px solid rgba(29,158,117,0.3);  color: #1D9E75; }
+.status-rejected { background: rgba(220,60,60,0.1);   border: 0.5px solid rgba(220,60,60,0.3);   color: #f08080; }
+.status-ongoing  { background: rgba(91,155,213,0.1);  border: 0.5px solid rgba(91,155,213,0.3);  color: #5b9bd5; }
+.status-completed{ background: rgba(150,150,150,0.1); border: 0.5px solid rgba(150,150,150,0.3); color: #aaa; }
+
+.nf-action-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.nf-action-btn {
+    padding: 7px 14px; border-radius: 8px; border: none;
+    font-size: 12px; font-weight: 600; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; text-decoration: none;
+    transition: all 0.2s; display: inline-block;
+}
+.btn-accept  { background: rgba(29,158,117,0.15); color: #1D9E75; border: 0.5px solid rgba(29,158,117,0.3); }
+.btn-accept:hover  { background: #1D9E75; color: #fff; }
+.btn-reject  { background: rgba(220,60,60,0.1); color: #f08080; border: 0.5px solid rgba(220,60,60,0.3); }
+.btn-reject:hover  { background: #dc3c3c; color: #fff; }
+.btn-complete{ background: rgba(91,155,213,0.1); color: #5b9bd5; border: 0.5px solid rgba(91,155,213,0.3); }
+.btn-complete:hover { background: #5b9bd5; color: #fff; }
+
+.nf-empty-section {
+    background: #13161e; border: 0.5px dashed #2a3040;
+    border-radius: 12px; padding: 2rem; text-align: center;
+    color: #5a6a80; font-size: 13px;
+}
+
+/* PROFILE CARD */
+.nf-profile-card {
+    background: #13161e; border: 0.5px solid #2a3040;
+    border-radius: 14px; padding: 1.5rem;
+    display: flex; align-items: center; gap: 1.5rem;
+    margin-bottom: 2rem; flex-wrap: wrap;
+}
+.nf-profile-avatar {
+    width: 64px; height: 64px;
+    background: linear-gradient(135deg, #1D9E75, #0d6e52);
+    border-radius: 16px; display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+}
+.nf-profile-name { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+.nf-profile-trade { font-size: 13px; color: #1D9E75; font-weight: 500; margin-bottom: 6px; }
+.nf-profile-phone { font-size: 12px; color: #5a6a80; }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<nav class="nf-navbar">
+    <a href="{% url 'home' %}" class="nf-logo">
+        <div class="nf-logo-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                <circle cx="12" cy="9" r="2.5" fill="white" stroke="none"/>
+            </svg>
+        </div>
+        <div class="nf-logo-text">Near<span>fix</span></div>
+    </a>
+    <a href="{% url 'edit_provider_profile' %}" class="nf-btn-sm" style="color:#1D9E75; border-color:rgba(29,158,117,0.3);">Edit Profile</a>
+    <div class="nf-nav-right">
+        <div class="nf-user-badge">
+            <div class="nf-user-avatar">{{ user.first_name|first|upper|default:user.username|first|upper }}</div>
+            {{ user.first_name|default:user.username }}
+        </div>
+    <a href="{% url 'my_bookings' %}" class="nf-btn-sm">📋 My Bookings</a>
+        <a href="{% url 'logout' %}" class="nf-btn-sm">Sign out</a>
+        
+    </div>
+</nav>
+
+<div class="nf-dash-wrap">
+
+    <!-- PROFILE CARD -->
+
+    <div class="nf-profile-card">
+         <div class="nf-profile-avatar">
+    {% if user.profile_photo %}
+        <img src="{{ user.profile_photo.url }}" style="width:100%;height:100%;object-fit:cover;border-radius:16px;">
+    {% else %}
+        {{ user.first_name|first|upper|default:"P" }}
+    {% endif %}
+</div>
+        <div>
+            <div class="nf-profile-name">{{ user.get_full_name|default:user.username }}</div>
+            <div class="nf-profile-trade">🔧 {{ profile.trade }}</div>
+            <div class="nf-profile-phone">📱 {{ user.phone|default:"Phone not added" }}</div>
+        </div>
+        <div style="margin-left:auto;">
+            <div class="nf-avail-toggle">
+                <span class="nf-avail-label">Available</span>
+                <button class="nf-toggle {% if profile.is_available %}on{% endif %}" id="availToggle"
+                    onclick="toggleAvailability()"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD HEADER -->
+    <div class="nf-dash-header">
+        <div class="nf-dash-title">Provider <span>Dashboard</span></div>
+    </div>
+
+    <!-- STATS -->
+    <div class="nf-stats-row">
+        <div class="nf-stat-card yellow">
+            <div class="nf-stat-card-num">{{ pending|length }}</div>
+            <div class="nf-stat-card-label">Pending Requests</div>
+        </div>
+        <div class="nf-stat-card green">
+            <div class="nf-stat-card-num">{{ accepted|length }}</div>
+            <div class="nf-stat-card-label">Active Bookings</div>
+        </div>
+        <div class="nf-stat-card">
+            <div class="nf-stat-card-num">{{ completed|length }}</div>
+            <div class="nf-stat-card-label">Completed Jobs</div>
+        </div>
+        <div class="nf-stat-card blue">
+            <div class="nf-stat-card-num">⭐ {{ profile.rating|floatformat:1 }}</div>
+            <div class="nf-stat-card-label">Your Rating</div>
+        </div>
+    </div>
+
+    <!-- PENDING REQUESTS -->
+    <div class="nf-section">
+        <div class="nf-section-head">
+            <div class="nf-section-title">New Requests</div>
+            <div class="nf-count-badge yellow">{{ pending|length }}</div>
+        </div>
+
+        {% if pending %}
+            {% for booking in pending %}
+            <div class="nf-booking-card">
+                <div class="nf-booking-info">
+                    <div class="nf-booking-customer">
+                        👤 {{ booking.customer.get_full_name|default:booking.customer.username }}
+                    </div>
+                    <div class="nf-booking-meta">
+                        🔧 <span>{{ booking.service_type }}</span> &nbsp;·&nbsp;
+                        📍 <span>{{ booking.address|default:"Address not provided" }}</span> &nbsp;·&nbsp;
+                        🕐 <span>{{ booking.created_at|date:"d M, H:i" }}</span>
+                    </div>
+                    {% if booking.description %}
+                    <div class="nf-booking-meta" style="margin-top:4px;">💬 {{ booking.description }}</div>
+                    {% endif %}
+                </div>
+                <div>
+                    <div class="nf-status-badge status-pending" style="margin-bottom:8px;">Pending</div>
+                    <div class="nf-action-btns">
+                        <a href="{% url 'update_booking_status' booking.pk 'accepted' %}" class="nf-action-btn btn-accept">✓ Accept</a>
+                        <a href="{% url 'update_booking_status' booking.pk 'rejected' %}" class="nf-action-btn btn-reject">✗ Reject</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="nf-empty-section">No new requests right now</div>
+        {% endif %}
+    </div>
+
+    <!-- ACTIVE BOOKINGS -->
+    <div class="nf-section">
+        <div class="nf-section-head">
+            <div class="nf-section-title">Active Bookings</div>
+            <div class="nf-count-badge">{{ accepted|length }}</div>
+        </div>
+
+        {% if accepted %}
+            {% for booking in accepted %}
+            <div class="nf-booking-card">
+                <div class="nf-booking-info">
+                    <div class="nf-booking-customer">👤 {{ booking.customer.get_full_name|default:booking.customer.username }}</div>
+                    <div class="nf-booking-meta">
+                        🔧 <span>{{ booking.service_type }}</span> &nbsp;·&nbsp;
+                        📍 <span>{{ booking.address|default:"Address not provided" }}</span>
+                    </div>
+                </div>
+                <div>
+                    <div class="nf-status-badge status-accepted" style="margin-bottom:8px;">Accepted</div>
+                    <div class="nf-action-btns">
+                        <a href="{% url 'update_booking_status' booking.pk 'completed' %}" class="nf-action-btn btn-complete">✓ Mark Complete</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="nf-empty-section">No active bookings</div>
+        {% endif %}
+    </div>
+
+    <!-- COMPLETED -->
+    <div class="nf-section">
+        <div class="nf-section-head">
+            <div class="nf-section-title">Completed Jobs</div>
+            <div class="nf-count-badge">{{ completed|length }}</div>
+        </div>
+
+        {% if completed %}
+            {% for booking in completed %}
+            <div class="nf-booking-card">
+                <div class="nf-booking-info">
+                    <div class="nf-booking-customer">👤 {{ booking.customer.get_full_name|default:booking.customer.username }}</div>
+                    <div class="nf-booking-meta">
+                        🔧 <span>{{ booking.service_type }}</span> &nbsp;·&nbsp;
+                        📅 <span>{{ booking.created_at|date:"d M Y" }}</span>
+                        {% if booking.amount %}&nbsp;·&nbsp; 💰 ₹{{ booking.amount }}{% endif %}
+                    </div>
+                </div>
+                <div class="nf-status-badge status-completed">Completed</div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="nf-empty-section">No completed jobs yet</div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function toggleAvailability() {
+    const btn = document.getElementById('availToggle');
+    btn.classList.toggle('on');
+    // TODO: AJAX call to update availability
+}
+</script>
+{% endblock %}

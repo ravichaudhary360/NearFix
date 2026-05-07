@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% block title %}Book {{ provider.user.get_full_name }} — NearFix{% endblock %}
+
+{% block extra_css %}
+<style>
+.nf-navbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 2.5rem; background: #13161e;
+    border-bottom: 0.5px solid #2a3040;
+    position: sticky; top: 0; z-index: 100;
+}
+.nf-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.nf-logo-icon { width: 36px; height: 36px; background: #1D9E75; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+.nf-logo-icon svg { width: 18px; height: 18px; }
+.nf-logo-text { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px; letter-spacing: -0.5px; color: #fff; }
+.nf-logo-text span { color: #1D9E75; }
+.nf-nav-right { display: flex; align-items: center; gap: 1rem; }
+.nf-user-badge { display: flex; align-items: center; gap: 8px; background: #1a1e28; border: 0.5px solid #2a3040; border-radius: 20px; padding: 6px 14px; font-size: 13px; color: #e8e6e0; }
+.nf-user-avatar { width: 26px; height: 26px; background: #1D9E75; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; }
+.nf-btn-sm { font-size: 12px; color: #5a6a80; text-decoration: none; padding: 6px 12px; border-radius: 8px; border: 0.5px solid #2a3040; transition: all 0.2s; }
+.nf-btn-sm:hover { color: #e8e6e0; border-color: #4a5a70; }
+
+.nf-page { max-width: 800px; margin: 0 auto; padding: 2.5rem; }
+
+.nf-breadcrumb { font-size: 12px; color: #5a6a80; margin-bottom: 1.5rem; }
+.nf-breadcrumb a { color: #1D9E75; text-decoration: none; }
+
+/* PROVIDER SUMMARY */
+.nf-provider-summary {
+    background: #13161e; border: 0.5px solid #2a3040;
+    border-radius: 14px; padding: 1.5rem;
+    display: flex; align-items: center; gap: 1.2rem;
+    margin-bottom: 2rem;
+}
+.nf-prov-avatar {
+    width: 56px; height: 56px;
+    background: linear-gradient(135deg, #1D9E75, #0d6e52);
+    border-radius: 14px; display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+}
+.nf-prov-name { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+.nf-prov-trade { font-size: 13px; color: #1D9E75; margin-bottom: 6px; }
+.nf-prov-stats { display: flex; gap: 1rem; }
+.nf-prov-stat { font-size: 12px; color: #5a6a80; }
+.nf-prov-stat span { color: #e8e6e0; }
+
+/* FORM */
+.nf-form-card {
+    background: #13161e; border: 0.5px solid #2a3040;
+    border-radius: 14px; padding: 2rem;
+}
+.nf-form-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 1.5rem; }
+.nf-form-title span { color: #1D9E75; }
+
+.nf-field { margin-bottom: 16px; }
+.nf-label { font-size: 11px; font-weight: 500; color: #8a9ab5; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px; }
+.nf-input {
+    width: 100%; background: #0d0f14; border: 0.5px solid #2a3040;
+    border-radius: 8px; padding: 11px 14px;
+    font-size: 14px; color: #e8e6e0; font-family: 'DM Sans', sans-serif;
+    outline: none; transition: border-color 0.2s;
+}
+.nf-input::placeholder { color: #3a4a5e; }
+.nf-input:focus { border-color: #1D9E75; box-shadow: 0 0 0 3px rgba(29,158,117,0.1); }
+textarea.nf-input { resize: vertical; min-height: 100px; }
+
+.nf-submit-btn {
+    width: 100%; padding: 13px; border-radius: 8px; border: none;
+    background: #1D9E75; color: #fff;
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px;
+    cursor: pointer; margin-top: 8px; transition: background 0.2s;
+}
+.nf-submit-btn:hover { background: #17876a; }
+
+.nf-info-box {
+    background: rgba(29,158,117,0.06); border: 0.5px solid rgba(29,158,117,0.2);
+    border-radius: 10px; padding: 12px 16px;
+    font-size: 13px; color: #8a9ab5; line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+.nf-info-box strong { color: #1D9E75; }
+</style>
+{% endblock %}
+{% block content %}
+<nav class="nf-navbar">
+    <a href="{% url 'home' %}" class="nf-logo">
+        <div class="nf-logo-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                <circle cx="12" cy="9" r="2.5" fill="white" stroke="none"/>
+            </svg>
+        </div>
+        <div class="nf-logo-text">Near<span>fix</span></div>
+    </a>
+    <div class="nf-nav-right">
+        {% if user.is_authenticated %}
+        <div class="nf-user-badge">
+            <div class="nf-user-avatar">{{ user.first_name|first|upper|default:user.username|first|upper }}</div>
+            {{ user.first_name|default:user.username }}
+        </div>
+        <a href="{% url 'logout' %}" class="nf-btn-sm">Sign out</a>
+        {% endif %}
+    </div>
+</nav>
+
+<div class="nf-page">
+    <div class="nf-breadcrumb">
+        <a href="{% url 'home' %}">Home</a> →
+        <a href="{% url 'providers_list' %}?category={{ provider.trade|lower }}">{{ provider.trade }}</a> →
+        Book Now
+    </div>
+
+    <!-- PROVIDER SUMMARY -->
+    <div class="nf-provider-summary">
+        <div class="nf-prov-avatar">{{ provider.user.first_name|first|upper|default:"P" }}</div>
+        <div>
+            <div class="nf-prov-name">{{ provider.user.get_full_name|default:provider.user.username }}</div>
+            <div class="nf-prov-trade">🔧 {{ provider.trade }}</div>
+            <div class="nf-prov-stats">
+                <div class="nf-prov-stat">⭐ <span>{{ provider.rating|floatformat:1 }}</span></div>
+                <div class="nf-prov-stat">{{ provider.total_reviews }} reviews</div>
+                <div class="nf-prov-stat">{{ provider.experience_years }} yrs exp</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOOKING FORM -->
+    <div class="nf-form-card">
+        <div class="nf-form-title">Send <span>Booking Request</span></div>
+
+        <div class="nf-info-box">
+            <strong>How it works:</strong> Your request will be sent to the provider. Once they accept, you'll get their contact details and can track the service.
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="nf-field">
+                <label class="nf-label">Service Type</label>
+                <input type="text" name="service_type" class="nf-input"
+                       value="{{ provider.trade }}" placeholder="e.g. Electrical wiring repair">
+            </div>
+
+            <div class="nf-field">
+                <label class="nf-label">Your Address</label>
+                <input type="text" name="address" class="nf-input"
+                       placeholder="e.g. 123 MG Road, Dehradun, Uttarakhand" required>
+            </div>
+
+            <div class="nf-field">
+                <label class="nf-label">Describe your problem</label>
+                <textarea name="description" class="nf-input"
+                          placeholder="Describe what needs to be fixed or done..."></textarea>
+            </div>
+
+            <button type="submit" class="nf-submit-btn">Send Booking Request →</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

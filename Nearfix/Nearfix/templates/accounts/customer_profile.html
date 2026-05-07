@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+{% block title %}My Profile — NearFix{% endblock %}
+
+{% block extra_css %}
+<style>
+.nf-page { max-width: 700px; margin: 0 auto; padding: 2.5rem; }
+.nf-breadcrumb { font-size: 12px; color: #5a6a80; margin-bottom: 1.5rem; }
+.nf-breadcrumb a { color: #1D9E75; text-decoration: none; }
+
+.nf-profile-hero {
+    background: linear-gradient(135deg, #13161e, #0d1f1a);
+    border: 0.5px solid #2a3040; border-radius: 16px;
+    padding: 2rem; margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: 1.5rem;
+    flex-wrap: wrap;
+}
+.nf-profile-avatar-wrap { position: relative; }
+.nf-profile-avatar {
+    width: 80px; height: 80px; border-radius: 20px;
+    background: linear-gradient(135deg, #1D9E75, #0d6e52);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-size: 30px; font-weight: 700; color: #fff;
+    overflow: hidden; cursor: pointer;
+}
+.nf-profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.nf-avatar-edit {
+    position: absolute; bottom: -4px; right: -4px;
+    width: 24px; height: 24px; background: #1D9E75;
+    border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; font-size: 12px; cursor: pointer;
+    border: 2px solid #0d0f14;
+}
+.nf-profile-info { flex: 1; }
+.nf-profile-name { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+.nf-profile-email { font-size: 13px; color: #5a6a80; margin-bottom: 8px; }
+.nf-profile-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(29,158,117,0.1); border: 0.5px solid rgba(29,158,117,0.3);
+    border-radius: 20px; padding: 4px 12px;
+    font-size: 12px; color: #1D9E75; font-weight: 500;
+}
+
+.nf-form-card { background: #13161e; border: 0.5px solid #2a3040; border-radius: 14px; padding: 2rem; margin-bottom: 1.5rem; }
+.nf-form-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 1.5rem; }
+.nf-form-title span { color: #1D9E75; }
+
+.nf-row { display: flex; gap: 12px; }
+.nf-row .nf-field { flex: 1; }
+.nf-field { margin-bottom: 16px; }
+.nf-label { font-size: 11px; font-weight: 500; color: #8a9ab5; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px; }
+.nf-input { width: 100%; background: #0d0f14; border: 0.5px solid #2a3040; border-radius: 8px; padding: 11px 14px; font-size: 14px; color: #e8e6e0; font-family: 'DM Sans', sans-serif; outline: none; transition: border-color 0.2s; }
+.nf-input::placeholder { color: #3a4a5e; }
+.nf-input:focus { border-color: #1D9E75; box-shadow: 0 0 0 3px rgba(29,158,117,0.1); }
+.nf-input:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.nf-submit-btn { width: 100%; padding: 13px; border-radius: 8px; border: none; background: #1D9E75; color: #fff; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; cursor: pointer; transition: background 0.2s; }
+.nf-submit-btn:hover { background: #17876a; }
+
+/* STATS */
+.nf-stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 1.5rem; }
+.nf-stat-card { background: #13161e; border: 0.5px solid #2a3040; border-radius: 12px; padding: 1.2rem; text-align: center; }
+.nf-stat-num { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+.nf-stat-num.green { color: #1D9E75; }
+.nf-stat-label { font-size: 11px; color: #5a6a80; text-transform: uppercase; letter-spacing: 0.4px; }
+
+@media (max-width: 480px) {
+    .nf-row { flex-direction: column; gap: 0; }
+    .nf-stats-row { grid-template-columns: repeat(2, 1fr); }
+    .nf-profile-hero { flex-direction: column; text-align: center; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<nav class="nf-navbar">
+    <a href="{% url 'home' %}" class="nf-logo">
+        <div class="nf-logo-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                <circle cx="12" cy="9" r="2.5" fill="white" stroke="none"/>
+            </svg>
+        </div>
+        <div class="nf-logo-text">Near<span>fix</span></div>
+    </a>
+    <div class="nf-nav-right">
+        <a href="{% url 'notifications' %}" class="nf-bell-wrap">
+            <div class="nf-bell-btn">🔔</div>
+            <span class="nf-bell-count hidden" id="notifCount">0</span>
+        </a>
+        <div class="nf-user-badge">
+            <div class="nf-user-avatar">
+                {% if user.profile_photo %}
+                    <img src="{{ user.profile_photo.url }}" alt="Profile">
+                {% else %}
+                    {{ user.first_name|first|upper|default:user.username|first|upper }}
+                {% endif %}
+            </div>
+            {{ user.first_name|default:user.username }}
+        </div>
+        <a href="{% url 'logout' %}" class="nf-btn-sm">Sign out</a>
+    </div>
+</nav>
+
+<div class="nf-page">
+    <div class="nf-breadcrumb">
+        <a href="{% url 'home' %}">Home</a> → My Profile
+    </div>
+
+    <!-- PROFILE HERO -->
+    <div class="nf-profile-hero">
+        <div class="nf-profile-avatar-wrap">
+            <label for="photoInput" style="cursor:pointer;">
+                <div class="nf-profile-avatar" id="photoPreview">
+                    {% if user.profile_photo %}
+                        <img src="{{ user.profile_photo.url }}" alt="Profile">
+                    {% else %}
+                        {{ user.first_name|first|upper|default:user.username|first|upper }}
+                    {% endif %}
+                </div>
+            </label>
+            <div class="nf-avatar-edit">✏️</div>
+        </div>
+        <div class="nf-profile-info">
+            <div class="nf-profile-name">{{ user.get_full_name|default:user.username }}</div>
+            <div class="nf-profile-email">📧 {{ user.email }}</div>
+            <div class="nf-profile-badge">👤 Customer</div>
+        </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="nf-stats-row">
+        <div class="nf-stat-card">
+            <div class="nf-stat-num green">{{ user.bookings_as_customer.count }}</div>
+            <div class="nf-stat-label">Total Bookings</div>
+        </div>
+        <div class="nf-stat-card">
+            <div class="nf-stat-num">{{ user.bookings_as_customer.filter.count }}</div>
+            <div class="nf-stat-label">Completed</div>
+        </div>
+        <div class="nf-stat-card">
+            <div class="nf-stat-num">{{ user.notifications.count }}</div>
+            <div class="nf-stat-label">Notifications</div>
+        </div>
+    </div>
+
+    <!-- EDIT FORM -->
+    <div class="nf-form-card">
+        <div class="nf-form-title">Edit <span>Profile</span></div>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" name="profile_photo" id="photoInput" accept="image/*" style="display:none;">
+
+            <div class="nf-row">
+                <div class="nf-field">
+                    <label class="nf-label">First Name</label>
+                    <input type="text" name="first_name" class="nf-input" value="{{ user.first_name }}" placeholder="Rahul">
+                </div>
+                <div class="nf-field">
+                    <label class="nf-label">Last Name</label>
+                    <input type="text" name="last_name" class="nf-input" value="{{ user.last_name }}" placeholder="Sharma">
+                </div>
+            </div>
+
+            <div class="nf-field">
+                <label class="nf-label">Phone Number</label>
+                <input type="text" name="phone" class="nf-input" value="{{ user.phone }}" placeholder="+91 98765 43210">
+            </div>
+
+            <div class="nf-field">
+                <label class="nf-label">Email Address</label>
+                <input type="email" class="nf-input" value="{{ user.email }}" disabled>
+            </div>
+
+            <button type="submit" class="nf-submit-btn">Save Changes →</button>
+        </form>
+    </div>
+
+    <!-- QUICK LINKS -->
+    <div class="nf-form-card">
+        <div class="nf-form-title">Quick <span>Links</span></div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <a href="{% url 'my_bookings' %}" class="nf-btn-sm green" style="padding:10px 20px;">📋 My Bookings</a>
+            <a href="{% url 'notifications' %}" class="nf-btn-sm green" style="padding:10px 20px;">🔔 Notifications</a>
+            <a href="{% url 'logout' %}" class="nf-btn-sm" style="padding:10px 20px; color:#f08080; border-color:rgba(220,60,60,0.3);">🚪 Sign out</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

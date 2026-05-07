@@ -1,0 +1,492 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Join as Provider — Nearfix{% endblock %}
+
+{% block extra_css %}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --green: #1D9E75;
+    --green-light: #25C490;
+    --green-glow: rgba(29,158,117,0.18);
+    --bg: #0d0f0e;
+    --bg2: #131614;
+    --bg3: #1a1d1b;
+    --border: rgba(255,255,255,0.07);
+    --text: #f0f2f0;
+    --muted: #7a8a7d;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+  }
+
+  .reg-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    min-height: 100vh;
+  }
+
+  /* LEFT PANEL */
+  .reg-left {
+    background: linear-gradient(160deg, #0a1a12 0%, #0d1a14 50%, #071510 100%);
+    padding: 60px 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .reg-left::before {
+    content: '';
+    position: absolute;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(29,158,117,0.12) 0%, transparent 70%);
+    top: -100px; left: -100px;
+    border-radius: 50%;
+  }
+
+  .reg-left::after {
+    content: '';
+    position: absolute;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(29,158,117,0.08) 0%, transparent 70%);
+    bottom: 50px; right: -80px;
+    border-radius: 50%;
+  }
+
+  .left-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(29,158,117,0.12);
+    border: 1px solid rgba(29,158,117,0.3);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 12px;
+    color: var(--green-light);
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    margin-bottom: 32px;
+    width: fit-content;
+  }
+
+  .left-badge span {
+    width: 6px; height: 6px;
+    background: var(--green-light);
+    border-radius: 50%;
+    display: inline-block;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .left-heading {
+    font-family: 'Syne', sans-serif;
+    font-size: 42px;
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 20px;
+  }
+
+  .left-heading .accent { color: var(--green-light); }
+
+  .left-sub {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.7;
+    margin-bottom: 48px;
+    max-width: 360px;
+  }
+
+  .perks {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .perk {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 14px;
+    color: #c8d4ca;
+  }
+
+  .perk-icon {
+    width: 36px; height: 36px;
+    background: rgba(29,158,117,0.12);
+    border: 1px solid rgba(29,158,117,0.2);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .stats-row {
+    display: flex;
+    gap: 32px;
+    margin-top: 52px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+  }
+
+  .stat-item { text-align: left; }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--green-light);
+  }
+  .stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; }
+
+  /* RIGHT PANEL */
+  .reg-right {
+    background: var(--bg2);
+    padding: 50px 52px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow-y: auto;
+  }
+
+  .form-header {
+    margin-bottom: 36px;
+  }
+
+  .form-header h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .form-header p {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .form-header p a {
+    color: var(--green-light);
+    text-decoration: none;
+  }
+
+  .section-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--green-light);
+    margin: 28px 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .form-grid.single { grid-template-columns: 1fr; }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .field.full { grid-column: 1 / -1; }
+
+  .field label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    letter-spacing: 0.03em;
+  }
+
+  .field input,
+  .field select,
+  .field textarea {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 14px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+  }
+
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px var(--green-glow);
+  }
+
+  .field select option { background: var(--bg3); }
+
+  .field textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  .field input[type="file"] {
+    padding: 9px 14px;
+    cursor: pointer;
+  }
+
+  .field input[type="file"]::file-selector-button {
+    background: rgba(29,158,117,0.15);
+    border: 1px solid rgba(29,158,117,0.3);
+    border-radius: 6px;
+    color: var(--green-light);
+    font-size: 12px;
+    padding: 4px 12px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    margin-right: 10px;
+  }
+
+  /* Error messages */
+  .field .errorlist {
+    list-style: none;
+    font-size: 11px;
+    color: #ff6b6b;
+    margin-top: 3px;
+  }
+
+  .submit-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--green);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 28px;
+    transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .submit-btn:hover {
+    background: var(--green-light);
+    box-shadow: 0 8px 24px rgba(29,158,117,0.3);
+    transform: translateY(-1px);
+  }
+
+  .submit-btn:active { transform: translateY(0); }
+
+  .login-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .login-link a { color: var(--green-light); text-decoration: none; font-weight: 500; }
+
+  /* Messages */
+  .messages-box {
+    margin-bottom: 20px;
+  }
+
+  .msg {
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+
+  .msg.success { background: rgba(29,158,117,0.12); border: 1px solid rgba(29,158,117,0.3); color: var(--green-light); }
+  .msg.error { background: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.3); color: #ff6b6b; }
+
+  @media (max-width: 900px) {
+    .reg-wrapper { grid-template-columns: 1fr; }
+    .reg-left { display: none; }
+    .reg-right { padding: 36px 24px; }
+    .form-grid { grid-template-columns: 1fr; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="reg-wrapper">
+
+  <!-- LEFT PANEL -->
+  <div class="reg-left">
+    <div class="left-badge"><span></span> Now accepting providers</div>
+
+    <h1 class="left-heading">
+      Grow your business<br>with <span class="accent">Nearfix</span>
+    </h1>
+
+    <p class="left-sub">
+      Join thousands of verified professionals earning more by connecting with nearby customers. Free to register, easy to use.
+    </p>
+
+    <div class="perks">
+      <div class="perk">
+        <div class="perk-icon">📍</div>
+        <span>Get booked by customers in your area</span>
+      </div>
+      <div class="perk">
+        <div class="perk-icon">✅</div>
+        <span>Verified badge builds trust instantly</span>
+      </div>
+      <div class="perk">
+        <div class="perk-icon">💰</div>
+        <span>Set your own rates and availability</span>
+      </div>
+      <div class="perk">
+        <div class="perk-icon">⭐</div>
+        <span>Build reputation through reviews</span>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-item">
+        <div class="stat-num">2.4K+</div>
+        <div class="stat-label">Providers</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">98%</div>
+        <div class="stat-label">Satisfaction</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">15 min</div>
+        <div class="stat-label">Avg Response</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="reg-right">
+    <div class="form-header">
+      <h2>Create Provider Account</h2>
+      <p>Already registered? <a href="{% url 'login' %}">Sign in here</a></p>
+    </div>
+
+    {% if messages %}
+    <div class="messages-box">
+      {% for message in messages %}
+        <div class="msg {{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <div class="section-label">Personal Info</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>First Name</label>
+          <input type="text" name="first_name" placeholder="Ramesh" value="{{ form.first_name.value|default:'' }}" required>
+          {{ form.first_name.errors }}
+        </div>
+        <div class="field">
+          <label>Last Name</label>
+          <input type="text" name="last_name" placeholder="Kumar" value="{{ form.last_name.value|default:'' }}" required>
+          {{ form.last_name.errors }}
+        </div>
+        <div class="field">
+          <label>Email Address</label>
+          <input type="email" name="email" placeholder="ramesh@email.com" value="{{ form.email.value|default:'' }}" required>
+          {{ form.email.errors }}
+        </div>
+        <div class="field">
+          <label>Phone Number</label>
+          <input type="tel" name="phone" placeholder="+91 98765 43210" value="{{ form.phone.value|default:'' }}" required>
+          {{ form.phone.errors }}
+        </div>
+        <div class="field full">
+          <label>Password</label>
+          <input type="password" name="password" placeholder="Min. 8 characters" required>
+          {{ form.password.errors }}
+        </div>
+      </div>
+
+      <div class="section-label">Professional Details</div>
+      <div class="form-grid">
+        <div class="field">
+          <label>Service Category</label>
+          <select name="service_category" required>
+            <option value="">Select service...</option>
+            {% for value, label in form.fields.service_category.choices %}
+              <option value="{{ value }}" {% if form.service_category.value == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+          </select>
+          {{ form.service_category.errors }}
+        </div>
+        <div class="field">
+          <label>Years of Experience</label>
+          <input type="number" name="experience_years" placeholder="e.g. 5" min="0" max="50" value="{{ form.experience_years.value|default:'' }}" required>
+          {{ form.experience_years.errors }}
+        </div>
+        <div class="field">
+          <label>City</label>
+          <input type="text" name="city" placeholder="e.g. Haldwani" value="{{ form.city.value|default:'' }}" required>
+          {{ form.city.errors }}
+        </div>
+        <div class="field">
+          <label>Area / Locality</label>
+          <input type="text" name="area" placeholder="e.g. Nainital Road" value="{{ form.area.value|default:'' }}" required>
+          {{ form.area.errors }}
+        </div>
+        <div class="field full">
+          <label>Bio (optional)</label>
+          <textarea name="bio" placeholder="Tell customers about your experience and skills...">{{ form.bio.value|default:'' }}</textarea>
+          {{ form.bio.errors }}
+        </div>
+        <div class="field full">
+          <label>Profile Photo (optional)</label>
+          <input type="file" name="profile_photo" accept="image/*">
+          {{ form.profile_photo.errors }}
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn">
+        Register as Provider →
+      </button>
+    </form>
+
+    <div class="login-link">
+      <!-- Looking to book a service? <a href="{% url 'home' %}">Go to homepage</a> -->
+       <a href="/">Go to homepage</a>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
