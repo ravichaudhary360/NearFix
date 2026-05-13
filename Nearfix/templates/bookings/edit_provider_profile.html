@@ -1,0 +1,263 @@
+{% extends 'base.html' %}
+{% block title %}Edit Profile — NearFix{% endblock %}
+
+{% block extra_css %}
+<style>
+.nf-navbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 2.5rem; background: #13161e;
+    border-bottom: 0.5px solid #2a3040;
+    position: sticky; top: 0; z-index: 100;
+}
+.nf-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.nf-logo-icon { width: 36px; height: 36px; background: #1D9E75; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+.nf-logo-icon svg { width: 18px; height: 18px; }
+.nf-logo-text { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px; letter-spacing: -0.5px; color: #fff; }
+.nf-logo-text span { color: #1D9E75; }
+.nf-nav-right { display: flex; align-items: center; gap: 1rem; }
+.nf-user-badge { display: flex; align-items: center; gap: 8px; background: #1a1e28; border: 0.5px solid #2a3040; border-radius: 20px; padding: 6px 14px; font-size: 13px; color: #e8e6e0; }
+.nf-user-avatar { width: 26px; height: 26px; background: #1D9E75; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; }
+.nf-btn-sm { font-size: 12px; color: #5a6a80; text-decoration: none; padding: 6px 12px; border-radius: 8px; border: 0.5px solid #2a3040; transition: all 0.2s; }
+.nf-btn-sm:hover { color: #e8e6e0; border-color: #4a5a70; }
+
+.nf-page { max-width: 700px; margin: 0 auto; padding: 2.5rem; }
+.nf-breadcrumb { font-size: 12px; color: #5a6a80; margin-bottom: 1.5rem; }
+.nf-breadcrumb a { color: #1D9E75; text-decoration: none; }
+
+.nf-form-card { background: #13161e; border: 0.5px solid #2a3040; border-radius: 14px; padding: 2rem; }
+.nf-form-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 1.8rem; }
+.nf-form-title span { color: #1D9E75; }
+
+.nf-section-divider {
+    font-size: 11px; font-weight: 600; color: #5a6a80;
+    text-transform: uppercase; letter-spacing: 0.8px;
+    margin: 1.5rem 0 1rem; padding-bottom: 8px;
+    border-bottom: 0.5px solid #2a3040;
+}
+
+/* PHOTO UPLOAD */
+.nf-photo-wrap {
+    display: flex; align-items: center; gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+.nf-photo-preview {
+    width: 80px; height: 80px; border-radius: 16px;
+    background: linear-gradient(135deg, #1D9E75, #0d6e52);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 700; color: #fff;
+    flex-shrink: 0; overflow: hidden; position: relative;
+}
+.nf-photo-preview img { width: 100%; height: 100%; object-fit: cover; }
+.nf-photo-upload-btn {
+    flex: 1;
+}
+.nf-photo-label {
+    display: block; padding: 10px 16px;
+    background: #0d0f14; border: 0.5px dashed #2a3040;
+    border-radius: 8px; cursor: pointer;
+    text-align: center; transition: border-color 0.2s;
+}
+.nf-photo-label:hover { border-color: #1D9E75; }
+.nf-photo-label-title { font-size: 13px; color: #e8e6e0; font-weight: 500; margin-bottom: 3px; }
+.nf-photo-label-sub { font-size: 11px; color: #5a6a80; }
+#photoInput { display: none; }
+
+.nf-row { display: flex; gap: 12px; }
+.nf-row .nf-field { flex: 1; }
+.nf-field { margin-bottom: 16px; }
+.nf-label { font-size: 11px; font-weight: 500; color: #8a9ab5; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 6px; }
+
+.nf-input {
+    width: 100%; background: #0d0f14; border: 0.5px solid #2a3040;
+    border-radius: 8px; padding: 11px 14px;
+    font-size: 14px; color: #e8e6e0; font-family: 'DM Sans', sans-serif;
+    outline: none; transition: border-color 0.2s;
+}
+.nf-input::placeholder { color: #3a4a5e; }
+.nf-input:focus { border-color: #1D9E75; box-shadow: 0 0 0 3px rgba(29,158,117,0.1); }
+textarea.nf-input { resize: vertical; min-height: 100px; }
+
+.nf-select {
+    width: 100%; background: #0d0f14; border: 0.5px solid #2a3040;
+    border-radius: 8px; padding: 11px 14px;
+    font-size: 14px; color: #e8e6e0; font-family: 'DM Sans', sans-serif;
+    outline: none; transition: border-color 0.2s; cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235a6a80' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 14px center;
+}
+.nf-select:focus { border-color: #1D9E75; }
+.nf-select option { background: #13161e; color: #e8e6e0; }
+
+.nf-exp-wrap { display: flex; align-items: center; gap: 14px; }
+.nf-exp-slider {
+    flex: 1; -webkit-appearance: none;
+    height: 4px; background: #2a3040; border-radius: 2px; outline: none;
+}
+.nf-exp-slider::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 18px; height: 18px;
+    border-radius: 50%; background: #1D9E75; cursor: pointer;
+}
+.nf-exp-val { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; color: #1D9E75; min-width: 50px; text-align: center; }
+
+.nf-toggle-wrap {
+    display: flex; align-items: center; justify-content: space-between;
+    background: #0d0f14; border: 0.5px solid #2a3040;
+    border-radius: 8px; padding: 12px 16px;
+}
+.nf-toggle-label { font-size: 14px; color: #e8e6e0; }
+.nf-toggle-sub { font-size: 11px; color: #5a6a80; margin-top: 2px; }
+.nf-toggle-switch { position: relative; width: 44px; height: 24px; }
+.nf-toggle-switch input { opacity: 0; width: 0; height: 0; }
+.nf-slider-toggle {
+    position: absolute; cursor: pointer; inset: 0;
+    background: #2a3040; border-radius: 12px; transition: 0.3s;
+}
+.nf-slider-toggle::before {
+    content: ''; position: absolute;
+    width: 18px; height: 18px; background: #fff;
+    border-radius: 50%; left: 3px; top: 3px; transition: 0.3s;
+}
+input:checked + .nf-slider-toggle { background: #1D9E75; }
+input:checked + .nf-slider-toggle::before { transform: translateX(20px); }
+
+.nf-submit-btn {
+    width: 100%; padding: 13px; border-radius: 8px; border: none;
+    background: #1D9E75; color: #fff;
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px;
+    cursor: pointer; margin-top: 8px; transition: background 0.2s;
+}
+.nf-submit-btn:hover { background: #17876a; }
+.nf-cancel-btn { display: block; text-align: center; margin-top: 12px; font-size: 13px; color: #5a6a80; text-decoration: none; }
+.nf-cancel-btn:hover { color: #e8e6e0; }
+</style>
+{% endblock %}
+
+{% block content %}
+<nav class="nf-navbar">
+    <a href="{% url 'home' %}" class="nf-logo">
+        <div class="nf-logo-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                <circle cx="12" cy="9" r="2.5" fill="white" stroke="none"/>
+            </svg>
+        </div>
+        <div class="nf-logo-text">Near<span>fix</span></div>
+    </a>
+    <div class="nf-nav-right">
+        <div class="nf-user-badge">
+            <div class="nf-user-avatar">{{ user.first_name|first|upper|default:user.username|first|upper }}</div>
+            {{ user.first_name|default:user.username }}
+        </div>
+        <a href="{% url 'logout' %}" class="nf-btn-sm">Sign out</a>
+    </div>
+</nav>
+
+<div class="nf-page">
+    <div class="nf-breadcrumb">
+        <a href="{% url 'provider_dashboard' %}">Dashboard</a> → Edit Profile
+    </div>
+
+    <div class="nf-form-card">
+        <div class="nf-form-title">Edit <span>Your Profile</span></div>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- PHOTO UPLOAD -->
+            <div class="nf-section-divider">Profile Photo</div>
+            <div class="nf-photo-wrap">
+                <div class="nf-photo-preview" id="photoPreview">
+                    {% if user.profile_photo %}
+                        <img src="{{ user.profile_photo.url }}" id="previewImg" alt="Profile">
+                    {% else %}
+                        <span id="previewInitial">{{ user.first_name|first|upper|default:"P" }}</span>
+                    {% endif %}
+                </div>
+                <div class="nf-photo-upload-btn">
+                    <label class="nf-photo-label" for="photoInput">
+                        <div class="nf-photo-label-title">📸 Upload Photo</div>
+                        <div class="nf-photo-label-sub">JPG, PNG — Max 2MB</div>
+                    </label>
+                    <input type="file" name="profile_photo" id="photoInput" accept="image/*">
+                </div>
+            </div>
+
+            <!-- PERSONAL INFO -->
+            <div class="nf-section-divider">Personal Information</div>
+            <div class="nf-row">
+                <div class="nf-field">
+                    <label class="nf-label">First Name</label>
+                    <input type="text" name="first_name" class="nf-input" value="{{ user.first_name }}" placeholder="Rahul">
+                </div>
+                <div class="nf-field">
+                    <label class="nf-label">Last Name</label>
+                    <input type="text" name="last_name" class="nf-input" value="{{ user.last_name }}" placeholder="Sharma">
+                </div>
+            </div>
+            <div class="nf-field">
+                <label class="nf-label">Phone Number</label>
+                <input type="text" name="phone" class="nf-input" value="{{ user.phone }}" placeholder="+91 98765 43210">
+            </div>
+
+            <!-- PROFESSIONAL INFO -->
+            <div class="nf-section-divider">Professional Details</div>
+            <div class="nf-field">
+                <label class="nf-label">Your Trade / Service</label>
+                <select name="trade" class="nf-select">
+                    {% for trade in trade_choices %}
+                    <option value="{{ trade }}" {% if trade == profile.trade %}selected{% endif %}>{{ trade }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="nf-field">
+                <label class="nf-label">Years of Experience</label>
+                <div class="nf-exp-wrap">
+                    <input type="range" name="experience_years" class="nf-exp-slider"
+                           min="0" max="30" value="{{ profile.experience_years }}"
+                           oninput="document.getElementById('expVal').textContent = this.value + ' yrs'">
+                    <div class="nf-exp-val" id="expVal">{{ profile.experience_years }} yrs</div>
+                </div>
+            </div>
+            <div class="nf-field">
+                <label class="nf-label">Bio / About You</label>
+                <textarea name="bio" class="nf-input" placeholder="Tell customers about yourself...">{{ profile.bio }}</textarea>
+            </div>
+
+            <!-- AVAILABILITY -->
+            <div class="nf-section-divider">Availability</div>
+            <div class="nf-field">
+                <div class="nf-toggle-wrap">
+                    <div>
+                        <div class="nf-toggle-label">Available for bookings</div>
+                        <div class="nf-toggle-sub">Customers can book you when this is ON</div>
+                    </div>
+                    <label class="nf-toggle-switch">
+                        <input type="checkbox" name="is_available" {% if profile.is_available %}checked{% endif %}>
+                        <span class="nf-slider-toggle"></span>
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" class="nf-submit-btn">Save Profile →</button>
+            <a href="{% url 'provider_dashboard' %}" class="nf-cancel-btn">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('photoInput').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById('photoPreview');
+            preview.innerHTML = '<img src="' + e.target.result + '" style="width:100%;height:100%;object-fit:cover;">';
+        }
+        reader.readAsDataURL(file);
+    }
+});
+</script>
+{% endblock %}

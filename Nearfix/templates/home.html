@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+{% block title %}Home — NearFix{% endblock %}
+
+{% block extra_css %}
+<style>
+.nf-navbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 2.5rem; background: #13161e;
+    border-bottom: 0.5px solid #2a3040;
+    position: sticky; top: 0; z-index: 100;
+}
+.nf-logo { display: flex; align-items: center; gap: 10px; }
+.nf-logo-icon {
+    width: 36px; height: 36px; background: #1D9E75;
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+}
+.nf-logo-icon svg { width: 18px; height: 18px; }
+.nf-logo-text { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px; letter-spacing: -0.5px; color: #fff; }
+.nf-logo-text span { color: #1D9E75; }
+.nf-nav-right { display: flex; align-items: center; gap: 1rem; }
+.nf-user-badge {
+    display: flex; align-items: center; gap: 8px;
+    background: #1a1e28; border: 0.5px solid #2a3040;
+    border-radius: 20px; padding: 6px 14px; font-size: 13px; color: #e8e6e0;
+}
+.nf-user-avatar {
+    width: 26px; height: 26px; background: #1D9E75; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: #fff;
+}
+.nf-logout-btn {
+    font-size: 12px; color: #5a6a80; text-decoration: none;
+    padding: 6px 12px; border-radius: 8px; border: 0.5px solid #2a3040; transition: all 0.2s;
+}
+.nf-logout-btn:hover { color: #e8e6e0; border-color: #4a5a70; }
+.nf-hero { text-align: center; padding: 3.5rem 2rem 2rem; }
+.nf-hero-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(29,158,117,0.1); border: 0.5px solid rgba(29,158,117,0.3);
+    border-radius: 20px; padding: 5px 14px; font-size: 12px; color: #1D9E75; font-weight: 500; margin-bottom: 1.2rem;
+}
+.nf-hero-dot { width: 6px; height: 6px; border-radius: 50%; background: #1D9E75; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.85)} }
+.nf-hero h1 { font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 800; color: #fff; margin-bottom: 10px; line-height: 1.2; }
+.nf-hero h1 span { color: #1D9E75; }
+.nf-hero p { font-size: 15px; color: #8a9ab5; max-width: 420px; margin: 0 auto 2rem; line-height: 1.7; }
+.nf-search-wrap { max-width: 520px; margin: 0 auto 1rem; display: flex; gap: 10px; }
+.nf-search-input {
+    flex: 1; background: #13161e; border: 0.5px solid #2a3040; border-radius: 10px;
+    padding: 12px 18px; font-size: 14px; color: #e8e6e0; font-family: 'DM Sans', sans-serif; outline: none; transition: border-color 0.2s;
+}
+.nf-search-input::placeholder { color: #3a4a5e; }
+.nf-search-input:focus { border-color: #1D9E75; }
+.nf-search-btn {
+    background: #1D9E75; border: none; border-radius: 10px; padding: 12px 20px;
+    color: #fff; font-size: 14px; font-family: 'Syne', sans-serif; font-weight: 700; cursor: pointer; transition: background 0.2s; white-space: nowrap;
+}
+.nf-search-btn:hover { background: #17876a; }
+.nf-location-btn {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #5a6a80;
+    background: none; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: color 0.2s; margin-bottom: 3rem;
+}
+.nf-location-btn:hover { color: #1D9E75; }
+.nf-section-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 1.5rem; padding: 0 2.5rem; }
+.nf-section-title span { color: #1D9E75; }
+.nf-categories {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 14px; padding: 0 2.5rem 3rem; max-width: 1100px; margin: 0 auto;
+}
+.nf-cat-card {
+    background: #13161e; border: 0.5px solid #2a3040; border-radius: 14px;
+    padding: 1.6rem 1.2rem; text-align: center; cursor: pointer; transition: all 0.2s; text-decoration: none; display: block;
+}
+.nf-cat-card:hover { border-color: #1D9E75; background: rgba(29,158,117,0.06); transform: translateY(-2px); }
+.nf-cat-icon { font-size: 32px; margin-bottom: 10px; display: block; }
+.nf-cat-name { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 600; color: #e8e6e0; display: block; margin-bottom: 4px; }
+.nf-cat-count { font-size: 11px; color: #5a6a80; }
+.nf-how { background: #13161e; border-top: 0.5px solid #2a3040; border-bottom: 0.5px solid #2a3040; padding: 3rem 2.5rem; margin-bottom: 3rem; }
+.nf-how-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; color: #fff; text-align: center; margin-bottom: 2rem; }
+.nf-steps { display: flex; justify-content: center; gap: 2rem; max-width: 800px; margin: 0 auto; flex-wrap: wrap; }
+.nf-step { text-align: center; flex: 1; min-width: 160px; }
+.nf-step-num {
+    width: 40px; height: 40px; background: rgba(29,158,117,0.15); border: 0.5px solid rgba(29,158,117,0.3);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px; color: #1D9E75; margin: 0 auto 12px;
+}
+.nf-step-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 6px; }
+.nf-step-desc { font-size: 12px; color: #5a6a80; line-height: 1.6; }
+</style>
+{% endblock %}
+
+
+{% block content %}
+<nav class="nf-navbar">
+    <div class="nf-logo">
+        <div class="nf-logo-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                <circle cx="12" cy="9" r="2.5" fill="white" stroke="none"/>
+            </svg>
+        </div>
+        <div class="nf-logo-text">Near<span>fix</span></div>
+    </div>
+    <div class="nf-nav-right">
+        {% if user.is_authenticated %}
+        <div class="nf-user-badge">
+            <div class="nf-user-avatar">{{ user.first_name|first|upper|default:user.username|first|upper }}</div>
+            {{ user.first_name|default:user.username }}
+        </div>
+        <a href="{% url 'customer_profile' %}" class="nf-btn-sm green">👤 Profile</a>
+        {% if user.is_authenticated and user.role == 'customer' %}
+<a href="{% url 'my_bookings' %}" class="nf-logout-btn" style="color:#1D9E75; border-color:rgba(29,158,117,0.3);">📋 My Bookings</a>
+{% endif %}
+{% if user.is_authenticated and user.role == 'provider' %}
+<a href="{% url 'provider_dashboard' %}" class="nf-logout-btn" style="color:#1D9E75; border-color:rgba(29,158,117,0.3);">📊 Dashboard</a>
+{% endif %}
+<a href="{% url 'notifications' %}" class="nf-bell-wrap">
+    <div class="nf-bell-btn">🔔</div>
+    <span class="nf-bell-count hidden" id="notifCount">0</span>
+</a>
+        <a href="{% url 'logout' %}" class="nf-logout-btn">Sign out</a>
+        {% else %}
+        <a href="{% url 'login' %}" class="nf-logout-btn">Sign in</a>
+        {% endif %}
+    </div>
+</nav>
+
+<div class="nf-hero">
+    <div class="nf-hero-tag"><div class="nf-hero-dot"></div> Professionals near you</div>
+    <h1>Find <span>trusted experts</span><br>in your area</h1>
+    <p>Book verified electricians, plumbers, carpenters and more — fast, reliable, and at your doorstep.</p>
+    <form method="get" action="/" class="nf-search-wrap">
+    <input type="text" name="q" class="nf-search-input"
+           value="{{ query }}"
+           placeholder="Search e.g. Electrician, Plumber...">
+    <select name="city" class="nf-search-city">
+        <option value="">📍 All Cities</option>
+        <option value="anupshahr"    {% if city == 'anupshahr'    %}selected{% endif %}>Anupshahr</option>
+        <option value="dibai"        {% if city == 'dibai'        %}selected{% endif %}>Dibai</option>
+        <option value="shikarpur"    {% if city == 'shikarpur'    %}selected{% endif %}>Shikarpur</option>
+        <option value="jahangirabad" {% if city == 'jahangirabad' %}selected{% endif %}>Jahangirabad</option>
+    </select>
+    <button type="submit" class="nf-search-btn">Search →</button>
+</form>
+    <button class="nf-location-btn" onclick="detectLocation()">📍 Detect my location automatically</button>
+</div>
+
+<div style="max-width:1100px; margin:0 auto;">
+    <div class="nf-section-title">Browse <span>Services</span></div>
+</div>
+<div class="nf-categories">
+    <a href="/providers/?category=electrician" class="nf-cat-card"><span class="nf-cat-icon">⚡</span><span class="nf-cat-name">Electrician</span><span class="nf-cat-count">48 providers nearby</span></a>
+    <a href="/providers/?category=plumber" class="nf-cat-card"><span class="nf-cat-icon">🔧</span><span class="nf-cat-name">Plumber</span><span class="nf-cat-count">35 providers nearby</span></a>
+    <a href="/providers/?category=carpenter" class="nf-cat-card"><span class="nf-cat-icon">🪚</span><span class="nf-cat-name">Carpenter</span><span class="nf-cat-count">22 providers nearby</span></a>
+    <a href="/providers/?category=painter" class="nf-cat-card"><span class="nf-cat-icon">🎨</span><span class="nf-cat-name">Painter</span><span class="nf-cat-count">19 providers nearby</span></a>
+    <a href="/providers/?category=ac-repair" class="nf-cat-card"><span class="nf-cat-icon">❄️</span><span class="nf-cat-name">AC Repair</span><span class="nf-cat-count">27 providers nearby</span></a>
+    <a href="/providers/?category=cleaner" class="nf-cat-card"><span class="nf-cat-icon">🧹</span><span class="nf-cat-name">Cleaner</span><span class="nf-cat-count">41 providers nearby</span></a>
+    <a href="/providers/?category=mechanic" class="nf-cat-card"><span class="nf-cat-icon">🔩</span><span class="nf-cat-name">Mechanic</span><span class="nf-cat-count">31 providers nearby</span></a>
+    <a href="/providers/?category=pest-control" class="nf-cat-card"><span class="nf-cat-icon">🐛</span><span class="nf-cat-name">Pest Control</span><span class="nf-cat-count">14 providers nearby</span></a>
+</div>
+{% if providers is not None %}
+<div style="max-width:1100px; margin:0 auto; padding: 0 2.5rem 3rem;">
+    <div class="nf-section-title">
+        🔍 Search Results
+        <span style="font-size:14px; color:#5a6a80; font-weight:400;">
+            — {{ providers|length }} provider{{ providers|length|pluralize }} found
+        </span>
+    </div>
+
+    {% if providers %}
+    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(300px,1fr)); gap:16px;">
+        {% for provider in providers %}
+        <div class="nf-cat-card" style="text-align:left; padding:1.4rem;">
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+                <div style="width:48px; height:48px; border-radius:12px; background:linear-gradient(135deg,#1D9E75,#0d6e52); display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-size:18px; font-weight:700; color:#fff; overflow:hidden; flex-shrink:0;">
+                    {% if provider.user.profile_photo %}
+                        <img src="{{ provider.user.profile_photo.url }}" style="width:100%;height:100%;object-fit:cover;">
+                    {% else %}
+                        {{ provider.user.first_name|first|upper|default:"P" }}
+                    {% endif %}
+                </div>
+                <div>
+                    <div style="font-family:'Syne',sans-serif; font-size:15px; font-weight:700; color:#fff;">{{ provider.user.get_full_name|default:provider.user.username }}</div>
+                    <div style="font-size:12px; color:#1D9E75;">{{ provider.trade }}</div>
+                </div>
+            </div>
+            <div style="display:flex; gap:1rem; margin-bottom:12px; font-size:12px; color:#5a6a80;">
+                <span>⭐ {{ provider.rating|floatformat:1 }}</span>
+                <span>📍 {{ provider.get_city_display }}</span>
+                <span>{{ provider.experience_years }} yrs</span>
+            </div>
+            <a href="{% url 'create_booking' provider.pk %}" class="nf-search-btn" style="display:block; text-align:center; text-decoration:none; padding:9px; border-radius:8px; font-size:13px;">Book Now →</a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align:center; padding:3rem; color:#5a6a80;">
+        <div style="font-size:40px; margin-bottom:1rem;">🔍</div>
+        <div style="font-family:'Syne',sans-serif; font-size:18px; color:#fff; margin-bottom:8px;">No providers found</div>
+        <div style="font-size:13px;">Try different search terms or city</div>
+    </div>
+    {% endif %}
+</div>
+{% endif %}
+
+<div class="nf-how">
+    <div class="nf-how-title">How NearFix Works</div>
+    <div class="nf-steps">
+        <div class="nf-step"><div class="nf-step-num">1</div><div class="nf-step-title">Choose Service</div><div class="nf-step-desc">Pick from our range of verified service categories</div></div>
+        <div class="nf-step"><div class="nf-step-num">2</div><div class="nf-step-title">Select Provider</div><div class="nf-step-desc">Browse nearby experts with ratings and reviews</div></div>
+        <div class="nf-step"><div class="nf-step-num">3</div><div class="nf-step-title">Book & Track</div><div class="nf-step-desc">Send request, get confirmed and track in real-time</div></div>
+        <div class="nf-step"><div class="nf-step-num">4</div><div class="nf-step-title">Pay & Review</div><div class="nf-step-desc">Pay securely and leave a review after service</div></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function detectLocation() {
+    const btn = document.querySelector('.nf-location-btn');
+    btn.textContent = '📍 Detecting...';
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            () => { btn.textContent = '✅ Location detected!'; btn.style.color = '#1D9E75'; },
+            () => { btn.textContent = '❌ Location access denied'; }
+        );
+    }
+}
+</script>
+{% endblock %}
