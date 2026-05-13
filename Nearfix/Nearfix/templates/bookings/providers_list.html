@@ -1,0 +1,304 @@
+{% extends 'base.html' %}
+{% block title %}{{ cat_info.name }} Providers — NearFix{% endblock %}
+
+{% block extra_css %}
+<style>
+.nf-navbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 2.5rem; background: #13161e;
+    border-bottom: 0.5px solid #2a3040;
+    position: sticky; top: 0; z-index: 100;
+}
+.nf-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.nf-logo-icon {
+    width: 36px; height: 36px; background: #1D9E75;
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+}
+.nf-logo-icon svg { width: 18px; height: 18px; }
+.nf-logo-text { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px; letter-spacing: -0.5px; color: #fff; }
+.nf-logo-text span { color: #1D9E75; }
+.nf-nav-right { display: flex; align-items: center; gap: 1rem; }
+.nf-user-badge {
+    display: flex; align-items: center; gap: 8px;
+    background: #1a1e28; border: 0.5px solid #2a3040;
+    border-radius: 20px; padding: 6px 14px; font-size: 13px; color: #e8e6e0;
+}
+.nf-user-avatar {
+    width: 26px; height: 26px; background: #1D9E75; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: #fff;
+}
+.nf-btn-sm {
+    font-size: 12px; color: #5a6a80; text-decoration: none;
+    padding: 6px 12px; border-radius: 8px; border: 0.5px solid #2a3040; transition: all 0.2s;
+}
+.nf-btn-sm:hover { color: #e8e6e0; border-color: #4a5a70; }
+
+/* PAGE HEADER */
+.nf-page-header {
+    padding: 2.5rem 2.5rem 1.5rem;
+    max-width: 1100px; margin: 0 auto;
+}
+.nf-breadcrumb {
+    font-size: 12px; color: #5a6a80; margin-bottom: 1rem;
+}
+.nf-breadcrumb a { color: #1D9E75; text-decoration: none; }
+.nf-breadcrumb a:hover { text-decoration: underline; }
+.nf-page-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px; font-weight: 800; color: #fff;
+    margin-bottom: 6px;
+}
+.nf-page-title span { color: #1D9E75; }
+.nf-page-sub { font-size: 14px; color: #5a6a80; }
+
+/* FILTERS */
+.nf-filters {
+    max-width: 1100px; margin: 0 auto;
+    padding: 0 2.5rem 1.5rem;
+    display: flex; gap: 10px; flex-wrap: wrap;
+}
+.nf-filter-btn {
+    padding: 7px 16px;
+    border-radius: 20px;
+    border: 0.5px solid #2a3040;
+    background: #13161e;
+    color: #8a9ab5; font-size: 12px;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer; transition: all 0.2s;
+}
+.nf-filter-btn.active, .nf-filter-btn:hover {
+    border-color: #1D9E75;
+    background: rgba(29,158,117,0.08);
+    color: #1D9E75;
+}
+
+/* PROVIDERS GRID */
+.nf-providers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+    padding: 0 2.5rem 3rem;
+    max-width: 1100px; margin: 0 auto;
+}
+
+.nf-provider-card {
+    background: #13161e;
+    border: 0.5px solid #2a3040;
+    border-radius: 16px;
+    padding: 1.5rem;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: block;
+}
+.nf-provider-card:hover {
+    border-color: #1D9E75;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+
+.nf-card-top {
+    display: flex; align-items: center; gap: 14px; margin-bottom: 1rem;
+}
+.nf-avatar {
+    width: 52px; height: 52px;
+    background: linear-gradient(135deg, #1D9E75, #0d6e52);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 20px; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+}
+.nf-card-info { flex: 1; }
+.nf-card-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px; font-weight: 700; color: #fff;
+    margin-bottom: 3px;
+}
+.nf-card-trade {
+    font-size: 12px; color: #1D9E75; font-weight: 500;
+}
+
+.nf-available-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(29,158,117,0.1);
+    border: 0.5px solid rgba(29,158,117,0.3);
+    border-radius: 20px; padding: 3px 10px;
+    font-size: 11px; color: #1D9E75;
+}
+.nf-available-dot { width: 5px; height: 5px; border-radius: 50%; background: #1D9E75; }
+
+.nf-card-stats {
+    display: flex; gap: 1rem; margin-bottom: 1rem;
+    padding: 10px 0;
+    border-top: 0.5px solid #1e2a3a;
+    border-bottom: 0.5px solid #1e2a3a;
+}
+.nf-stat-item { flex: 1; text-align: center; }
+.nf-stat-val {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px; font-weight: 700; color: #fff;
+    display: block;
+}
+.nf-stat-lbl { font-size: 10px; color: #5a6a80; text-transform: uppercase; letter-spacing: 0.4px; }
+
+.nf-card-bio {
+    font-size: 13px; color: #8a9ab5; line-height: 1.6;
+    margin-bottom: 1rem;
+    display: -webkit-box; -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical; overflow: hidden;
+}
+
+.nf-book-btn {
+    display: block; width: 100%;
+    padding: 10px;
+    background: #1D9E75; border: none;
+    border-radius: 8px; color: #fff;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 14px;
+    text-align: center; text-decoration: none;
+    cursor: pointer; transition: background 0.2s;
+}
+.nf-book-btn:hover { background: #17876a; }
+
+/* EMPTY STATE */
+.nf-empty {
+    text-align: center; padding: 5rem 2rem;
+    max-width: 400px; margin: 0 auto;
+}
+.nf-empty-icon { font-size: 48px; margin-bottom: 1rem; }
+.nf-empty-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px; font-weight: 700; color: #fff;
+    margin-bottom: 8px;
+}
+.nf-empty-sub { font-size: 14px; color: #5a6a80; line-height: 1.6; margin-bottom: 1.5rem; }
+.nf-back-btn {
+    display: inline-block;
+    padding: 10px 24px;
+    background: #1D9E75; border-radius: 8px;
+    color: #fff; text-decoration: none;
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- NAVBAR -->
+<nav class="nf-navbar">
+    <a href="{% url 'home' %}" class="nf-logo">
+        <div class="nf-logo-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                <circle cx="12" cy="9" r="2.5" fill="white" stroke="none"/>
+            </svg>
+        </div>
+        <div class="nf-logo-text">Near<span>fix</span></div>
+    </a>
+    <div class="nf-nav-right">
+        {% if user.is_authenticated %}
+        <div class="nf-user-badge">
+            <div class="nf-user-avatar">{{ user.first_name|first|upper|default:user.username|first|upper }}</div>
+            {{ user.first_name|default:user.username }}
+        </div>
+        <a href="{% url 'logout' %}" class="nf-btn-sm">Sign out</a>
+        {% else %}
+        <a href="{% url 'login' %}" class="nf-btn-sm">Sign in</a>
+        {% endif %}
+    </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="nf-page-header">
+    <div class="nf-breadcrumb">
+        <a href="{% url 'home' %}">Home</a> → {{ cat_info.icon }} {{ cat_info.name }}
+    </div>
+    <div class="nf-page-title">{{ cat_info.icon }} <span>{{ cat_info.name }}</span> Providers</div>
+    <div class="nf-page-sub">
+        {% if providers %}
+            {{ providers|length }} verified provider{{ providers|length|pluralize }} available near you
+        {% else %}
+            No providers found in this category yet
+        {% endif %}
+    </div>
+</div>
+
+<!-- FILTERS -->
+<!-- FILTERS -->
+<div class="nf-filters">
+    <a href="?category={{ category }}" 
+       class="nf-filter-btn {% if not city %}active{% endif %}">
+       📍 All Cities
+    </a>
+    {% for city_val, city_name in city_choices %}
+    <a href="?category={{ category }}&city={{ city_val }}" 
+       class="nf-filter-btn {% if city == city_val %}active{% endif %}">
+       📌 {{ city_name }}
+    </a>
+    {% endfor %}
+</div>
+
+<!-- PROVIDERS GRID -->
+{% if providers %}
+<div class="nf-providers-grid">
+    {% for provider in providers %}
+    <div class="nf-provider-card">
+        <div class="nf-card-top">
+            <!-- <div class="nf-avatar">{{ provider.user.first_name|first|upper|default:"P" }}</div> -->
+             <div class="nf-avatar">
+    {% if provider.user.profile_photo %}
+        <img src="{{ provider.user.profile_photo.url }}" style="width:100%;height:100%;object-fit:cover;border-radius:14px;">
+    {% else %}
+        {{ provider.user.first_name|first|upper|default:"P" }}
+    {% endif %}
+</div>
+            <div class="nf-card-info">
+                <div class="nf-card-name">{{ provider.user.get_full_name|default:provider.user.username }}</div>
+                <div class="nf-card-trade">{{ provider.trade }}</div>
+            </div>
+            {% if provider.is_available %}
+            <div class="nf-available-badge">
+                <div class="nf-available-dot"></div> Available
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="nf-card-stats">
+            <div class="nf-stat-item">
+                <span class="nf-stat-val">⭐ {{ provider.rating|floatformat:1 }}</span>
+                <span class="nf-stat-lbl">Rating</span>
+            </div>
+            <div class="nf-stat-item">
+                <span class="nf-stat-val">{{ provider.total_reviews }}</span>
+                <span class="nf-stat-lbl">Reviews</span>
+            </div>
+            <div class="nf-stat-item">
+                <span class="nf-stat-val">{{ provider.experience_years }}yr</span>
+                <span class="nf-stat-lbl">Experience</span>
+            </div>
+        </div>
+
+        {% if provider.bio %}
+        <div class="nf-card-bio">{{ provider.bio }}</div>
+        {% endif %}
+
+        <a href="{% url 'create_booking' provider.pk %}" class="nf-book-btn">
+            Book Now →
+        </a>
+    </div>
+    {% endfor %}
+</div>
+
+{% else %}
+<!-- EMPTY STATE -->
+<div class="nf-empty">
+    <div class="nf-empty-icon">{{ cat_info.icon }}</div>
+    <div class="nf-empty-title">No providers yet</div>
+    <div class="nf-empty-sub">
+        No {{ cat_info.name }} providers are available in your area right now. Check back soon!
+    </div>
+    <a href="{% url 'home' %}" class="nf-back-btn">← Browse Other Services</a>
+</div>
+{% endif %}
+
+{% endblock %}

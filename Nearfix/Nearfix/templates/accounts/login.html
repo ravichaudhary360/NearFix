@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{% static 'css/login.css' %}">
+{% endblock %}
+
+{% block title %}...{% endblock %}
+{% block content %}  
+<div class="nf-page">
+
+    <!-- LEFT PANEL -->
+    <div class="nf-left">
+        <div class="nf-left-glow1"></div>
+        <div class="nf-left-glow2"></div>
+
+        <div class="nf-logo">
+            <div class="nf-logo-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                    <circle cx="12" cy="9" r="2.5" fill="white" stroke="none"/>
+                </svg>
+            </div>
+            <div class="nf-logo-text">Near<span>fix</span></div>
+        </div>
+
+        <div class="nf-hero">
+            <div class="nf-live-badge">
+                <div class="nf-live-dot"></div>
+                Live in your area
+            </div>
+            <h1>Your local <em>experts</em>,<br>one tap away.</h1>
+            <p>Electricians, plumbers, carpenters — verified professionals at your doorstep, fast.</p>
+        </div>
+
+        <div class="nf-stats">
+            <div>
+                <div class="nf-stat-num">2.4K+</div>
+                <div class="nf-stat-label">Providers</div>
+            </div>
+            <div class="nf-vdiv"></div>
+            <div>
+                <div class="nf-stat-num">98%</div>
+                <div class="nf-stat-label">Satisfaction</div>
+            </div>
+            <div class="nf-vdiv"></div>
+            <div>
+                <div class="nf-stat-num">15 min</div>
+                <div class="nf-stat-label">Avg response</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="nf-right">
+        <div class="nf-form-wrap">
+
+            <!-- TABS -->
+            <div class="nf-tabs">
+                <a href="{% url 'login' %}" class="nf-tab {% if active == 'login' %}active{% endif %}">Sign in</a>
+                <a href="{% url 'signup' %}" class="nf-tab {% if active == 'signup' %}active{% endif %}">Create account</a>
+            </div>
+
+            <!-- LOGIN SECTION -->
+            <div class="nf-section {% if active == 'login' %}visible{% endif %}">
+                <div class="nf-form-title">Welcome back</div>
+                <div class="nf-form-sub">Sign in to your NearFix account</div>
+
+                <form method="post" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    <div class="nf-field">
+                        <label>Email or phone</label>
+                        {{ form.username }}
+                        {{ form.username.errors }}
+                    </div>
+                    <div class="nf-field">
+                        <label>Password</label>
+                        {{ form.password }}
+                        {{ form.password.errors }}
+                    </div>
+                    <div class="nf-forgot"><a href="#">Forgot password?</a></div>
+                    <button type="submit" class="nf-btn">Sign in →</button>
+                </form>
+
+                <div class="nf-or">or continue with</div>
+                <div class="nf-socials">
+                    <button class="nf-social">Google</button>
+                    <button class="nf-social">Facebook</button>
+                    <button class="nf-social">OTP</button>
+                </div>
+            </div>
+
+            <!-- SIGNUP SECTION -->
+            <div class="nf-section {% if active == 'signup' %}visible{% endif %}">
+                <div class="nf-form-title">Join NearFix</div>
+                <div class="nf-form-sub">Create your free account today</div>
+
+                <form method="post" action="{% url 'signup' %}" id="signupForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="role" id="roleInput" value="{{ selected_role|default:'customer' }}">
+
+                    <div class="nf-role-wrap">
+                        <span class="nf-role-label">I am a</span>
+                        <div class="nf-role-row">
+                            <button type="button"
+                                class="nf-role-btn {% if selected_role != 'provider' %}active{% endif %}"
+                                onclick="selectRole('customer', this)">
+                                <span class="role-icon">🏠</span>Customer
+                            </button>
+                            <button type="button"
+                                class="nf-role-btn {% if selected_role == 'provider' %}active{% endif %}"
+                                onclick="selectRole('provider', this)">
+                                <span class="role-icon">🔧</span>Service Provider
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="nf-row">
+                        <div class="nf-field">
+                            <label>First name</label>
+                            {{ customer_form.first_name }}
+                            {{ customer_form.first_name.errors }}
+                        </div>
+                        <div class="nf-field">
+                            <label>Last name</label>
+                            {{ customer_form.last_name }}
+                            {{ customer_form.last_name.errors }}
+                        </div>
+                    </div>
+
+                    <div class="nf-field">
+                        <label>Phone number</label>
+                        {{ customer_form.phone }}
+                        {{ customer_form.phone.errors }}
+                    </div>
+
+                    <div class="nf-field">
+                        <label>Email address</label>
+                        {{ customer_form.email }}
+                        {{ customer_form.email.errors }}
+                    </div>
+
+                    <div class="nf-field">
+                        <label>Password</label>
+                        {{ customer_form.password1 }}
+                        {{ customer_form.password1.errors }}
+                    </div>
+                    <div class="nf-field">
+    <label>Confirm Password</label>
+    {{ customer_form.password2 }}
+    {{ customer_form.password2.errors }}
+</div>
+
+                    <div class="nf-field" id="provider-trade-field">
+                        <label>Your service / trade</label>
+                        <!-- <input type="text" name="trade" class="nf-input"
+                               placeholder="e.g. Electrician, Plumber, Carpenter..."> -->
+                               <select name="trade" class="nf-input" style="cursor:pointer; appearance:none; background-image:url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%2712%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%235a6a80%27 stroke-width=%272%27%3E%3Cpath d=%27M6 9l6 6 6-6%27/%3E%3C/svg%3E'); background-repeat:no-repeat; background-position:right 14px center;">
+    <option value="" disabled selected>Select your trade...</option>
+    <option value="Electrician">⚡ Electrician</option>
+    <option value="Plumber">🔧 Plumber</option>
+    <option value="Carpenter">🪚 Carpenter</option>
+    <option value="Painter">🎨 Painter</option>
+    <option value="AC Repair">❄️ AC Repair</option>
+    <option value="Cleaner">🧹 Cleaner</option>
+    <option value="Mechanic">🔩 Mechanic</option>
+    <option value="Pest Control">🐛 Pest Control</option>
+    <option value="Mason">🧱 Mason</option>
+    <option value="Welder">🔥 Welder</option>
+    <option value="CCTV Technician">📷 CCTV Technician</option>
+    <option value="Internet/WiFi Technician">📶 Internet/WiFi Technician</option>
+    <option value="Washing Machine Repair">🫧 Washing Machine Repair</option>
+    <option value="Refrigerator Repair">🧊 Refrigerator Repair</option>
+    <option value="TV Repair">📺 TV Repair</option>
+    <option value="Gardener">🌿 Gardener</option>
+    <option value="Cook">👨‍🍳 Cook</option>
+    <option value="Other">🔨 Other</option>
+</select>
+                    </div>
+
+                    <button type="submit" class="nf-btn">Create account →</button>
+
+                    <div class="nf-terms">
+                        By signing up, you agree to our
+                        <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %} 
+{% block extra_js %}
+<script>
+    function selectRole(role, btn) {
+        document.querySelectorAll('.nf-role-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('roleInput').value = role;
+        document.getElementById('provider-trade-field').style.display =
+            role === 'provider' ? 'block' : 'none';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const role = document.getElementById('roleInput');
+        if (role && role.value === 'provider') {
+            document.getElementById('provider-trade-field').style.display = 'block';
+        }
+        document.querySelectorAll('.errorlist').forEach(el => {
+            const input = el.previousElementSibling;
+            if (input && input.classList.contains('nf-input')) {
+                input.classList.add('error-field');
+            }
+        });
+    });
+</script>
+{% endblock %}

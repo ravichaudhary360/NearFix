@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block title %}Notifications — NearFix{% endblock %}
+
+{% block extra_css %}
+<style>
+.nf-page { max-width: 700px; margin: 0 auto; padding: 2.5rem; }
+.nf-page-title { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; color: #fff; margin-bottom: 0.4rem; }
+.nf-page-title span { color: #1D9E75; }
+.nf-page-sub { font-size: 14px; color: #5a6a80; margin-bottom: 2rem; }
+
+.nf-notif-card {
+    background: #13161e; border: 0.5px solid #2a3040;
+    border-radius: 12px; padding: 1.2rem 1.4rem;
+    margin-bottom: 10px; display: flex;
+    align-items: flex-start; gap: 14px;
+    text-decoration: none; transition: border-color 0.2s;
+}
+.nf-notif-card:hover { border-color: #1D9E75; }
+.nf-notif-card.unread { border-color: rgba(29,158,117,0.3); background: rgba(29,158,117,0.04); }
+
+.nf-notif-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: rgba(29,158,117,0.1); border: 0.5px solid rgba(29,158,117,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+}
+.nf-notif-content { flex: 1; }
+.nf-notif-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+.nf-notif-msg { font-size: 13px; color: #8a9ab5; line-height: 1.6; margin-bottom: 6px; }
+.nf-notif-time { font-size: 11px; color: #5a6a80; }
+
+.nf-empty { text-align: center; padding: 4rem 2rem; }
+.nf-empty-icon { font-size: 48px; margin-bottom: 1rem; }
+.nf-empty-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+.nf-empty-sub { font-size: 14px; color: #5a6a80; }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- NAVBAR -->
+<nav class="nf-navbar">
+    <a href="{% url 'home' %}" class="nf-logo">
+        <div class="nf-logo-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                <circle cx="12" cy="9" r="2.5" fill="white" stroke="none"/>
+            </svg>
+        </div>
+        <div class="nf-logo-text">Near<span>fix</span></div>
+    </a>
+    <div class="nf-nav-right">
+        {% if user.is_authenticated %}
+        <div class="nf-user-badge">
+            <div class="nf-user-avatar">{{ user.first_name|first|upper|default:user.username|first|upper }}</div>
+            {{ user.first_name|default:user.username }}
+        </div>
+        <a href="{% url 'logout' %}" class="nf-btn-sm">Sign out</a>
+        {% endif %}
+    </div>
+</nav>
+
+<div class="nf-page">
+    <div class="nf-page-title">🔔 <span>Notifications</span></div>
+    <div class="nf-page-sub">Aapke saare updates yahan hain</div>
+
+    {% if notifications %}
+        {% for notif in notifications %}
+        <a href="{{ notif.link|default:'#' }}" class="nf-notif-card {% if not notif.is_read %}unread{% endif %}">
+            <div class="nf-notif-icon">
+                {% if 'Booking' in notif.title %}🔖
+                {% elif 'Accept' in notif.title %}✅
+                {% elif 'Reject' in notif.title %}❌
+                {% elif 'Complete' in notif.title %}🎉
+                {% elif 'Payment' in notif.title %}💳
+                {% elif 'Review' in notif.title %}⭐
+                {% else %}🔔{% endif %}
+            </div>
+            <div class="nf-notif-content">
+                <div class="nf-notif-title">{{ notif.title }}</div>
+                <div class="nf-notif-msg">{{ notif.message }}</div>
+                <div class="nf-notif-time">{{ notif.created_at|timesince }} ago</div>
+            </div>
+        </a>
+        {% endfor %}
+    {% else %}
+        <div class="nf-empty">
+            <div class="nf-empty-icon">🔔</div>
+            <div class="nf-empty-title">No notifications yet</div>
+            <div class="nf-empty-sub">Jab koi booking hogi toh yahan dikhega!</div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

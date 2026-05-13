@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% block title %}My Bookings — NearFix{% endblock %}
+
+{% block extra_css %}
+<style>
+.nf-navbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 2.5rem; background: #13161e;
+    border-bottom: 0.5px solid #2a3040;
+    position: sticky; top: 0; z-index: 100;
+}
+.nf-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.nf-logo-icon { width: 36px; height: 36px; background: #1D9E75; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+.nf-logo-icon svg { width: 18px; height: 18px; }
+.nf-logo-text { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px; letter-spacing: -0.5px; color: #fff; }
+.nf-logo-text span { color: #1D9E75; }
+.nf-nav-right { display: flex; align-items: center; gap: 1rem; }
+.nf-user-badge { display: flex; align-items: center; gap: 8px; background: #1a1e28; border: 0.5px solid #2a3040; border-radius: 20px; padding: 6px 14px; font-size: 13px; color: #e8e6e0; }
+.nf-user-avatar { width: 26px; height: 26px; background: #1D9E75; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; }
+.nf-btn-sm { font-size: 12px; color: #5a6a80; text-decoration: none; padding: 6px 12px; border-radius: 8px; border: 0.5px solid #2a3040; transition: all 0.2s; }
+.nf-btn-sm:hover { color: #e8e6e0; border-color: #4a5a70; }
+
+.nf-page { max-width: 900px; margin: 0 auto; padding: 2.5rem; }
+
+.nf-page-title { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; color: #fff; margin-bottom: 0.4rem; }
+.nf-page-title span { color: #1D9E75; }
+.nf-page-sub { font-size: 14px; color: #5a6a80; margin-bottom: 2rem; }
+
+.nf-booking-card {
+    background: #13161e; border: 0.5px solid #2a3040;
+    border-radius: 14px; padding: 1.4rem 1.6rem;
+    margin-bottom: 12px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 1rem;
+    text-decoration: none;
+    transition: border-color 0.2s, transform 0.2s;
+}
+.nf-booking-card:hover { border-color: #1D9E75; transform: translateY(-1px); }
+
+.nf-booking-left { flex: 1; }
+.nf-booking-id { font-size: 11px; color: #5a6a80; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.4px; }
+.nf-booking-service { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+.nf-booking-meta { font-size: 12px; color: #8a9ab5; line-height: 1.7; }
+
+.nf-status-badge {
+    display: inline-block; padding: 5px 14px; border-radius: 20px;
+    font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px;
+}
+.status-pending  { background: rgba(245,200,66,0.1);  border: 0.5px solid rgba(245,200,66,0.3);  color: #f5c842; }
+.status-accepted { background: rgba(29,158,117,0.1);  border: 0.5px solid rgba(29,158,117,0.3);  color: #1D9E75; }
+.status-rejected { background: rgba(220,60,60,0.1);   border: 0.5px solid rgba(220,60,60,0.3);   color: #f08080; }
+.status-ongoing  { background: rgba(91,155,213,0.1);  border: 0.5px solid rgba(91,155,213,0.3);  color: #5b9bd5; }
+.status-completed{ background: rgba(150,150,150,0.1); border: 0.5px solid rgba(150,150,150,0.3); color: #aaa; }
+
+.nf-empty {
+    text-align: center; padding: 5rem 2rem;
+}
+.nf-empty-icon { font-size: 48px; margin-bottom: 1rem; }
+.nf-empty-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+.nf-empty-sub { font-size: 14px; color: #5a6a80; margin-bottom: 1.5rem; }
+.nf-green-btn {
+    display: inline-block; padding: 10px 24px; background: #1D9E75;
+    border-radius: 8px; color: #fff; text-decoration: none;
+    font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<nav class="nf-navbar">
+    <a href="{% url 'home' %}" class="nf-logo">
+        <div class="nf-logo-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                <circle cx="12" cy="9" r="2.5" fill="white" stroke="none"/>
+            </svg>
+        </div>
+        <div class="nf-logo-text">Near<span>fix</span></div>
+    </a>
+    <div class="nf-nav-right">
+        {% if user.is_authenticated %}
+        <div class="nf-user-badge">
+            <div class="nf-user-avatar">{{ user.first_name|first|upper|default:user.username|first|upper }}</div>
+            {{ user.first_name|default:user.username }}
+        </div>
+        <a href="{% url 'logout' %}" class="nf-btn-sm">Sign out</a>
+        {% endif %}
+    </div>
+</nav>
+
+<div class="nf-page">
+    <div class="nf-page-title">My <span>Bookings</span></div>
+    <div class="nf-page-sub">Track all your service requests</div>
+
+    {% if bookings %}
+        {% for booking in bookings %}
+        <a href="{% url 'booking_detail' booking.pk %}" class="nf-booking-card">
+            <div class="nf-booking-left">
+                <div class="nf-booking-id">Booking #{{ booking.id }}</div>
+                <div class="nf-booking-service">🔧 {{ booking.service_type }}</div>
+                <div class="nf-booking-meta">
+                    👤 {{ booking.provider.user.get_full_name|default:booking.provider.user.username }}
+                    &nbsp;·&nbsp; 📍 {{ booking.address|default:"No address" }}
+                    &nbsp;·&nbsp; 🕐 {{ booking.created_at|date:"d M Y" }}
+                </div>
+            </div>
+            <!-- <span class="nf-status-badge status-{{ booking.status }}">{{ booking.status|title }}</span> -->
+             <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+    <span class="nf-badge badge-{{ booking.status }}">{{ booking.status|title }}</span>
+    {% if booking.status == 'accepted' %}
+    <a href="{% url 'payment_page' booking.pk %}"
+       style="padding:6px 14px; background:#1D9E75; color:#fff; border-radius:8px;
+              font-size:12px; font-weight:700; text-decoration:none; font-family:'Syne',sans-serif;">
+        💳 Pay Now
+    </a>
+    {% endif %}
+    {% if booking.status == 'completed' %}
+    <a href="{% url 'review_page' booking.pk %}"
+       style="padding:6px 14px; background:rgba(29,158,117,0.1); color:#1D9E75;
+              border:0.5px solid rgba(29,158,117,0.3); border-radius:8px;
+              font-size:12px; font-weight:700; text-decoration:none; font-family:'Syne',sans-serif;">
+        ⭐ Review
+    </a>
+    {% endif %}
+</div>
+        </a>
+        {% endfor %}
+    {% else %}
+        <div class="nf-empty">
+            <div class="nf-empty-icon">📋</div>
+            <div class="nf-empty-title">No bookings yet</div>
+            <div class="nf-empty-sub">You haven't made any service requests yet. Browse services to get started!</div>
+            <a href="{% url 'home' %}" class="nf-green-btn">Browse Services →</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
